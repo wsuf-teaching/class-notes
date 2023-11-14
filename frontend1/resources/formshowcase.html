@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Form showcase</title>
+    </head>
+    <body>
+        <form action="http://127.0.0.1:5000/test" method="POST">
+            <h1>This is a form</h1>
+
+            <label for="yourname">Your name:</label>
+            <input id="yourname" type="text" name="yourname"/>
+            <br>
+
+
+            <label>
+                Your e-mail
+                <input type="email" name="email"/>
+            </label>
+            <br>
+
+
+            <label>
+                Write me a funny story
+                <textarea name="story" cols="40" rows="5"></textarea>
+            </label>
+            <br>
+
+
+            <label>
+                Password:
+                <input type="password" name="password" pattern="[A-Za-z0-9]{10}"/>
+            </label>
+            <br>
+
+
+            <label>
+                Upload some file:
+                <input type="file" name="file" multiple/>
+            </label>
+            <br>
+
+
+            <label>
+                Date and hour of birth:
+                <input type="date" name="date"/>
+                <input type="time" name="time"/>
+            </label>
+            <br>
+
+
+            <label> 
+                Age:
+                <input type="number" min="0" max="100" step="0.1" name="age">
+            </label>
+            <br>
+
+
+            <label>
+                Color:
+                <input type="color" name="color"/>
+            </label>
+            <br>
+
+
+            <label>
+                Your number of cars (0-5):
+                <input type="range" min="0" max="5" name="cars">
+            </label>
+            <br>
+
+
+            <label>
+                Firefox
+                <input type="radio" name="browser">
+            </label>
+            <br>
+            <label> 
+                Chrome
+                <input type="radio" name="browser">
+            </label>
+            <br>
+            <label> 
+                Safari
+                <input type="radio" name="browser">
+            </label>
+            <br>
+            <label> 
+                Edge
+                <input type="radio" name="browser">
+            </label>
+            <br>
+
+
+            <label>
+                Your favourite animal:
+                <select name="animal">
+                    <option selected disabled hidden>Choose something</option>
+                    <optgroup label="Birds">
+                        <option value="Pigeon">Pigeon</option>
+                        <option value="Seagull">Seagull</option>
+                        <option value="Sparrow">Sparrow</option>   
+                    </optgroup>
+                    <optgroup label="Mammals">
+                        <option value="Elephant">Elephant</option>
+                        <option value="Dolphin">Dolphin</option>
+                    </optgroup>
+                </select>
+            </label>
+            <br>
+
+
+            <label>
+                Favourite programming language:
+                <input list="langs" name="langs">
+            </label>
+            <datalist id="langs">
+                <option value="JavaScript"></option>
+                <option value="Java"></option>
+                <option value="PHP"></option>
+                <option value="Haskell"></option>
+            </datalist>
+            <br>
+
+
+            <button type="submit">Press me</button>
+            <button type="reset">Reset me</button>
+        </form>
+    </body>
+</html>

@@ -275,7 +275,7 @@ Lastly, with an anchor tag we can also link to e-mail addresses.
 
 Media can be image, audio video, or even embedded documents among others.
 
-> Download and open [mediashowcase.html](./resources/mediashowcase.html) as well as [ba001.jpeg](./resources/ba001.jpeg).
+> Download and open [mediashowcase.html](./resources/mediashowcase.html) as well as [ba001.jpeg](./resources/ba001.jpeg) and [shapes.jpg](./resources/shapes.jpg).
 
 They all have their respective elements being ```<img>```, ```<audio>```, ```<video>``` and ```<iframe>```.
 

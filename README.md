@@ -8,5 +8,6 @@
  - [1.3 Git](fundamentals-of-programming/git.md)
 
 [2. Frontend I](frontend1/)
-- [2.1 HTML](/frontend1/html.md)
-  - [2.1.1 resources](/frontend1/resources)
+- [2.1 HTML basics](/frontend1/html.md)
+- [2.2 HTML forms](/frontend1/html_forms.md)
+- [2.X resources](/frontend1/resources)
