@@ -8,7 +8,8 @@
  - [1.3 Git](fundamentals-of-programming/git.md)
 
 [2. Frontend I](frontend1/)
-- [2.1 HTML basics](/frontend1/html.md)
-- [2.2 HTML forms](/frontend1/html_forms.md)
-- [2.a resources](/frontend1/resources)
-- [2.b test server setup](/frontend1/test_server_setup.md)
+- [2.1 HTML - basics](/frontend1/html.md)
+  - [2.a resources](/frontend1/resources)
+- [2.2 HTML - forms](/frontend1/html_forms.md)
+  - [2.b test server setup](/frontend1/test_server_setup.md)
+- [2.3 CSS - selectors, display, positioning](/frontend1/css.md)
