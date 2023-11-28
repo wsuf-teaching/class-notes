@@ -1,0 +1,35 @@
+.parent {
+    border: 2px solid red;
+    margin: 0 auto;
+    margin-bottom: 50px;
+}
+.child {
+    background-color: green;
+    text-align: center;
+    margin: 2px;
+    color: white;
+}
+
+.parent {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+}
+
+.child {
+    width: 20%;
+}
+
+.c111 {
+    order: 2;
+}
+.c222 {
+    order: 3;
+}
+.c333 {
+    order: 4;
+}
+.c444 {
+    order: 1;
+}

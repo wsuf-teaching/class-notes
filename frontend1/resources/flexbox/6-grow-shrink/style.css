@@ -1,0 +1,33 @@
+.parent {
+    border: 2px solid red;
+    margin: 0 auto;
+    margin-bottom: 50px;
+}
+.child {
+    background-color: green;
+    text-align: center;
+    margin: 2px;
+    color: white;
+}
+
+.parent {
+    display: flex;
+
+}
+
+.child {
+    width: 200px;
+}
+
+.c111 {
+    flex-grow: 1;
+}
+.c222 {
+    flex-grow: 2;
+}
+.c333 {
+    flex-shrink: 3;
+}
+.c444 {
+    flex-shrink: 2;
+}

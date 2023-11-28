@@ -1,0 +1,42 @@
+.parent {
+    border: 2px solid red;
+    margin: 0 auto;
+    margin-bottom: 50px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items:center; /* fiddle around with this */
+    height: 100px;
+}
+.child {
+    background-color: green;
+    text-align: center;
+    margin: 2px;
+    color: white;
+    width: 100px;
+}
+
+.parent {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items:center; /* fiddle around with this */
+    height: 100px;
+}
+
+.child {
+    width: 100px;
+}
+
+.child:nth-of-type(1) {
+    height: 60px;
+}
+.child:nth-of-type(2) {
+    height: 40px;
+}
+.child:nth-of-type(3) {
+    height: 80px;
+}
+.child:nth-of-type(4) {
+    height: 20px;
+}

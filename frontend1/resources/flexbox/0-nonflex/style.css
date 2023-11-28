@@ -1,0 +1,10 @@
+.parent {
+    border: 2px solid red;
+    margin: 0 auto;
+}
+.child {
+    background-color: green;
+    margin: 2px;
+    text-align: center;
+    color: white;
+}

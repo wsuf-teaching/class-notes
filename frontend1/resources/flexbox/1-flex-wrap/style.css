@@ -1,0 +1,19 @@
+.parent {
+    border: 2px solid red;
+    margin: 0 auto;
+}
+.child {
+    background-color: green;
+    text-align: center;
+    color: white;
+}
+
+.parent {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.child {
+    width: 50%;
+}

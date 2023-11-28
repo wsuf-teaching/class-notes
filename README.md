@@ -13,3 +13,6 @@
 - [2.2 HTML - forms](/frontend1/html_forms.md)
   - [2.b test server setup](/frontend1/test_server_setup.md)
 - [2.3 CSS - selectors, display, positioning](/frontend1/css.md)
+- [2.4 Flexbox](/frontend1/flexbox.md)
+  - [2.c flexbox resources](/frontend1/resources/flexbox)
+- [2.5 Bootstrap quick intro](/frontend1/bootstrap.md)
