@@ -16,3 +16,6 @@
 - [2.4 Flexbox](/frontend1/flexbox.md)
   - [2.c flexbox resources](/frontend1/resources/flexbox)
 - [2.5 Bootstrap quick intro](/frontend1/bootstrap.md)
+
+[3. Frontend II](frontend2/)
+  - [3.1 JavaScript - basics](frontend2/javascript-basics.md)
