@@ -19,3 +19,5 @@
 
 [3. Frontend II](frontend2/)
   - [3.1 JavaScript - basics](frontend2/javascript-basics.md)
+  - [3.2 JavaScript - creating elements, handling events](frontend2/javascript-apis-events.md)
+    - [3.a JS resources](frontend2/resources)
