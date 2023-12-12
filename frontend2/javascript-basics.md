@@ -708,3 +708,90 @@ uniqueAttendees.clear();
 ```javascript
 uniqueAttendeed.size;                           // 0 once again, because we clared it again just now :)
 ```
+
+## Further useful (but advanced) functions
+
+> In all the following examples, the arrow notation is used, but it is not a requirement. You can always use the regular function declaration syntax.
+
+### Foreach
+
+Yet another "for-like" loop. `foreach` iterates through all elements in an array or object while abstracting away the need
+for managing index variables and also providing a cleaner more concise syntax.
+Otherwise, for all intents and purposes, it's the same as one of the notations shown above.
+
+```javascript
+let numbers = [1, 2, 3, 4];
+
+numbers.forEach((num) => {
+    console.log(num);                           // 1, 2, 3, 4
+});
+```
+
+> It can also take the index as the second, and the whole array as the third parameter.
+
+```javascript
+let numbers = [1, 2, 3, 4];
+
+numbers.forEach((num, index, arr) => {
+    console.log(num);                           // 1, 2, 3, 4
+    console.log(index);                         // 0, 1, 2, 3
+    console.log(arr);                           // [1,2,3,4], [1,2,3,4], [1,2,3,4], [1,2,3,4]    
+});
+```
+
+Foreach can also be used to iterate through a map. Taking the previous example of maps, let's look at the following snippet:
+
+```javascript
+capitalCities.forEach((capital, country) => {
+  console.log(`${country}: ${capital}`);
+});
+```
+
+And also on sets.
+
+```javascript
+uniqueAttendees.forEach((attendee) => {
+  console.log(attendee);
+});
+```
+
+### Map (the method, not the data structure)
+
+The `map` method creates a new array by applying a function to each element of the array.
+Without using it to return values, it functions roughly the same as `foreach`.
+
+```javascript
+let numbers = [1, 2, 3, 4];
+
+let squaredNumbers = numbers.map((num) => {
+    return num * num;
+});
+// 1, 4, 9, 16
+```
+
+### Filter
+
+`filter` method creates a new array with elements that satisfy a given condition. Effectively filtering out the elements that
+do not satisfy them, hence its name.
+
+```javascript
+let numbers = [1, 2, 3, 4];
+
+let evenNumbers = numbers.filter((num) => {
+    return num % 2 === 0;
+});
+// 2, 4
+```
+
+### Reduce
+
+Finally, `reduce` applies a function against an accumulator and each element in the array (from left to right) to reduce it to a single value.
+
+```javascript
+let numbers = [1, 2, 3, 4];
+
+let sum = numbers.reduce((accumulator, currentValue) => {
+    return accumulator + currentValue;
+}, 0);
+// 10
+```
