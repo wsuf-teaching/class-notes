@@ -21,5 +21,6 @@
   - [3.1 JavaScript - basics](frontend2/javascript-basics.md)
   - [3.2 JavaScript - creating elements, handling events](frontend2/javascript-apis-events.md)
     - [3.a JS resources](frontend2/resources)
+    - [3.b calculator reexplained source code](frontend2/resources/calculator-reexplained.zip)
   - [3.3 JavaScript - Loan calculator project](https://github.com/wsuf-teaching/loan-calculator)
   - [3.4 JavaScript - Flight ✈ Diary project](https://github.com/wsuf-teaching/flight-diary)
