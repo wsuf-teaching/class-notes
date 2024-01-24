@@ -27,3 +27,4 @@
   - [3.5 JavaScript - async, promises, fetch](frontend2/javascript-async-promise-fetch.md)
   - [3.6 JavaScript - recursion](frontend2/javascript-recursion.md)
   - [3.7 npm, webpack](frontend2/npm.md)
+    - [3.c Webpack starter kit](https://github.com/wsuf-teaching/webpack-starter-kit)
