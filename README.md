@@ -26,3 +26,4 @@
   - [3.4 JavaScript - Flight ✈ Diary project](https://github.com/wsuf-teaching/flight-diary)
   - [3.5 JavaScript - async, promises, fetch](frontend2/javascript-async-promise-fetch.md)
   - [3.6 JavaScript - recursion](frontend2/javascript-recursion.md)
+  - [3.7 npm, webpack](frontend2/npm.md)

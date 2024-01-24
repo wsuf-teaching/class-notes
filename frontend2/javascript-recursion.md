@@ -251,4 +251,31 @@ root.right.left = new TreeNode(6);
 root.right.right = new TreeNode(7);
 ```
 
-Traversing the tree: tomorrow :)
+In-order traversal:
+
+```javascript
+function inOrderTraversal(node) {
+  if (node !== null) {
+    this.inOrderTraversal(node.left);
+    console.log(node.value);
+    this.inOrderTraversal(node.right);
+  }
+}
+```
+
+> Doing pre or post-order traversal instead is just swapping around the lines of the function.
+
+Summing its values up:
+```javascript
+function sumValues(node) {
+  if (node === null) {
+    return 0;
+  }
+  return node.value + this.sumValues(node.left) + this.sumValues(node.right);
+}
+```
+
+- Binary trees are dynamic data structures where the number of nodes and the structure of the tree can change during operations. This dynamic nature can make it challenging to use loops efficiently, as the size and structure of the tree are not known beforehand.
+- The logic for traversing a tree can be more complex with loops, especially for in-order traversal where you need to visit nodes in a specific order (left, current, right). Recursion naturally fits the recursive nature of the problem, making the code more concise and readable.
+- Tree traversal often involves maintaining a stack to keep track of the nodes to be processed. While loops can be used with an explicit stack, recursion utilizes the call stack implicitly, reducing the need for manual stack management.
+- While it's technically possible to implement tree traversal with loops, recursion often provides a more natural and concise way to express the logic, making the code more readable and maintainable. The recursive approach takes advantage of the call stack, which is well-suited for traversing tree structures.
