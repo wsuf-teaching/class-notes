@@ -31,3 +31,4 @@
     
 [4. Web Application Development](web-application-development/)
   - [4.1 React installation](web-application-development/react-install.md)
+  - [4.2 React basics](web-application-development/react-basics.md)
