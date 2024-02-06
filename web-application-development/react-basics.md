@@ -456,7 +456,11 @@ Inside `FoodList` we map over the data array, and return an instance of `Food` f
             )}
 ```
 
-> Keys help React identify which items have changed, are added, or are removed. Keys should be given to the elements inside the array to give the elements a stable identity. In this example we use the map index for a key, but a better solution would be to use a uuid or element id from a database.
+> Keys help React identify which items have changed, are added, or are removed. 
+> Keys should be given to the elements inside the array to give the elements a stable identity. 
+> In this example we use the map index for a key, but a better solution would be to use a uuid or element id from a database.
+> Even though `key` looks like a prop, it is not. If we want to use that value inside the component, we have to manually
+> add it as a prop (with a different name) as well.
 
 Finished, it should look like this:
 
@@ -477,3 +481,416 @@ function FoodList(props) {
 
 export default FoodList;
 ```
+
+Alternatively, the mapping part can also happen beforehand saving the created element into a variable.
+In that case, `FoodList` will look like as follows:
+
+```jsx
+import Food from "./Food";
+
+function FoodList(props) {
+
+    const foodElements = props.foods.map((food,i) => 
+        <Food data={food} key={i}/>
+    );
+
+    return (
+        <div>
+            <h1>List of foods:</h1>
+            {foodElements}
+        </div>
+    );
+}
+
+export default FoodList;
+```
+
+#### Fragments
+
+One thing that was quickly skipped over previously in the `App` component is having multiple "top-level" elements in a React component.
+Hence the `<FoodList ...>` component was put into the div in `App` like in the example below: 
+
+```jsx
+  return (
+    <div>
+      Hello world!
+      <FoodList foods={mockFoods}/>
+    </div>
+  );
+```
+
+Why is that? Couldn't we just put it below the `<div>`? Well, we cannot "just" put it there.
+
+If we were to try this (don't try it, it will not work, promise!):
+
+```jsx
+  return (
+    <div>
+      Hello world!
+    </div>
+    <FoodList foods={mockFoods}/>
+  );
+```
+
+even the IDE would scream at us, just like the browser would also throw an error stating something alone the lines of "`Adjacent JSX elements must be wrapped in an enclosing tag.`".
+
+That's right, a React component can only have one "top-level" element.
+
+Good news, that there are various strategies around this:
+
+1. Using a container element. Just as we had before. Wrap the contents of the component with a single JSX element, like a `<div>`. This would work in almost all of the cases, it is not optimal as it needlessly introduces additional elements in the DOM.
+
+2. Introduce higher-order components to wrap other components. This will use the "child" prop, more about that in a little while.
+
+3. Wrap elements in a "React fragment" (`<React.Fragment>`, or `<>` and `</>`). This wrapps the adjacent JSX elements without introducing an extra DOM node.
+
+```jsx
+  return (
+    <React.fragment>
+      <div>
+        Hello world!
+      </div>
+      <FoodList foods={mockFoods}/>
+    </React.fragment>
+  );
+```
+
+or
+
+```jsx
+  return (
+    <>
+      <div>
+        Hello world!
+      </div>
+      <FoodList foods={mockFoods}/>
+    </>
+  );
+```
+
+> For the former example, you might need to import React in the .js file! (`import React from "react";`)
+
+#### Conditional rendering
+
+We have seen above, how we can run JavaScript code in the JSX block inbetween curly braces (`{}`). Using that, we can easily wrap parts of the JSX blocks in conditionals, thus rendering conditionally.
+
+One of the ways to do it is usng element variables, creating a variable holding the JSX element conditionally, then adding that to the return statement.
+
+
+Edit `Food.js` as such:
+
+```jsx
+function Food(props) {
+
+    let sale;
+    if( props.data.price<10 ) {
+        sale = <div id="sale">SALE!</div>;
+    }
+
+    return (
+        <div className="food">
+            <h2>{props.data.name.toUpperCase()}</h2>
+            <img src={props.data.url}></img>
+            <p>{props.data.description}</p>
+            {sale}
+            <h4>Price: ${props.data.price}</h4>
+        </div>
+    );
+}
+
+export default Food;
+```
+
+First, pased on the condition we create variable holding the `<div>`, then simply use it in the JSX block.
+
+The other method uses a shorter "inline" syntax inside the returned JSX block to achieve the same:
+
+```jsx
+    return (
+        <div className="food">
+            <h2>{props.data.name.toUpperCase()}</h2>
+            <img src={props.data.url}></img>
+            <p>{props.data.description}</p>
+            {props.data.price < 10 && 
+                <div id="sale">SALE!</div>
+            }
+            <h4>Price: ${props.data.price}</h4>
+        </div>
+    );
+```
+
+#### Children prop
+
+So far, every custom component of ours were self-closing. `<FoodList foods={mockFoods}/>`, `<Food data={food}/>` and even `<App/>`.
+
+That is not to say this is our only option. Similar to default JSX elements, like `<h2>` or `<div>`, "wrapper" components can easily be made that take "children" between their opening and closing tags.
+
+To make the next example look a little better, remove the `border: 2px solid red; margin:auto; max-width:900px;` styles in `index.css` from the `.food` style.
+
+Let's make a new component called `Card`.
+
+```jsx
+function Card() {
+    return (
+        <div className="card">
+        </div>
+    );
+}
+
+export default Card;
+```
+
+Also add some nice styling to this Card in `index.css`.
+
+```css
+.card {
+  border: 1px solid black;
+  border-radius: 15px;
+  box-shadow: 0px 3px 3px 0px rgba(0,0,0,0.1);
+  max-width: 900px;
+  margin: 15px auto; 
+}
+```
+
+Now the changes that we need to do is wrap the individual `Food` elements with the `Card` component in `FoodList`. 
+
+> Notice, how the `key` prop got moved to the `Card` here.
+
+```jsx
+    return (
+        <div>
+            <h1>List of foods:</h1>
+            {props.foods.map((food,i)=>
+                <Card key={i}>
+                    <Food data={food} />
+                </Card> 
+            )}
+        </div>
+    );
+```
+
+Finally, the `Card` component should take `props` parameter and have `{props.children}` inbetween its opening and closing `<div>` tags.
+
+```jsx
+function Card(props) {
+    return (
+        <div className="card">
+            {props.children}
+        </div>
+    );
+}
+```
+
+Now we have a `Card` component that can be reused not just for displaying foods in a list, but everywhere, as it can wrap-around anything.
+
+#### Styling
+
+Let's look at styles and CSS in React, let's see a few of the options we have to make the web application look nice.
+
+##### 1. Inline styles
+Inline styles. Once again the syntax is a little different, but not much. Inline styles have to be put between double curly braces just like other
+JavaScript code in the JSX block, and then we have to use the camel case version of the style properties.
+For example `<h1 style={{ textAlign: 'center' }}>Food list is working!</h1>` in the `FoodList.js` component.
+For multiple styles, separate them with comma signs (`,`): `{{textAlign:'center', color:'blue'}}`
+
+##### Setting styles properties dynamically
+
+Styles, just like JSX elements can be added dynamically and conditionally. Consider the following example in `Food.js`:
+
+```jsx
+    <h4 style={{color: props.data.price<10 ? 'red' : 'black'}}>
+```
+
+If the price is lower than 10, the `<h4>` displaying it should be red, otherwise black. 
+
+> The conditional (ternary) operator is the only JavaScript operator that takes three operands: 
+> a condition followed by a question mark (?), 
+> then an expression to execute if the condition is truthy followed by a colon (:), 
+> and finally the expression to execute if the condition is falsy. 
+> This operator is frequently used as an alternative to an if...else statement.
+> [source: MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Conditional_operator)
+
+Other small example we can do is displaying every second `Card` component in a slightly different gray-ish colour.
+For that, first pass the `i` from the `map` in `FoodList` as a prop named `index`, then use it in the JSX block:
+
+```jsx
+    {/* ... */}
+    <Card key={i} index={i}>
+    {/* ... */}
+```
+
+```jsx
+    <div className="card" style={{backgroundColor: props.index%2 ? 'white':'lightgray'}}>
+```
+
+> Consider if we have multiple of these conditional styles in an element, using classes (classNames) should be way easier 
+> than adding the same condition check before each style property.
+
+ 
+##### 2. Regular class names and css files
+
+Simply using regular class names as we did it so far (a single `index.css`). While it works, it is not the most elegant solution.
+It suffers from the same problem as any prior application throughout the semester of us having to keep track of all the CSS ids and class names
+in the global scope.
+> Remember, instead of `class`, they keyword `className` should be used in React.
+
+Of course one option is to create numerous smaller CSS files.
+Let's for example create a `Food.css` and put it right next to `Food.js` then grab all the relevant CSS from `index.css` and put it in there.
+Link it by simply importing it as such: `import './Food.css';`.
+However, while this may split the CSS into smaller and more manageable pieces, in the end all of the individual styles are still applied
+globally to all elements; so if we were to have a different component with the class `food` on it, these styles would take
+effect on that as well - and anything else applicable in the application globally.
+
+##### Setting CSS classes dynamically
+
+Combining the previous two approaches leads to slightly better results. We make CSS classes in our `.css` files and apply those dynamically
+instead of applying inlined CSS styles.
+
+Add the two background-colors as their own CSS classes, maybe into a newly created `Card.css` which of course needs to also be imported now:
+
+```js
+import './Card.css';
+```
+
+```css
+.whiteBg {
+  background-color: white;
+}
+
+.grayBg {
+  background-color: lightgray;
+}
+```
+
+Now, the className syntax becomes a little weird, but logically it is simply a javascript block inside JSX with string interpolation inside.
+
+```jsx
+        <div className={`card ${props.index%2 ? 'whiteBg' : 'grayBg'}`}>
+```
+
+It can maybe be further simplified by moving the expression out of the return block and only needing the gray background
+if it is an odd element making the component look like as such:
+
+```jsx
+import './Card.css';
+
+function Card(props) {
+
+    const everySecond = props.index%2;
+
+    return (
+        <div className={`card ${everySecond ? 'grayBg' : 'whiteBg'}`}>
+            {props.children}
+        </div>
+    );
+}
+
+export default Card;
+```
+
+##### 3. Styled components
+
+Styled Components is a popular library for React that allows us to write CSS directly within 
+the JavaScript code using tagged template literals. Basically components with certain styles attached to them from the start, and of course
+those styles only affecting that specific component they were attached to.
+
+To get started, the package has to be installed first:
+
+```
+npm install --save styled-components
+```
+
+For this example, look at `FoodList`. The `<h1>` inside it has some inline styles. Let's make that a styled component instead.
+Maybe name the new file and component `Welcome.js`, as that explains what it does pretty well.
+
+First just create a regular component from it, then it will be converted into a styled component step by step.
+Cut it from FoodList, replacing it with `<Welcome>Food list is working</Welcome>`. Also add the required import (`import Welcome from './Welcome';`) and it is done.
+
+```jsx
+
+function Welcome() {
+    return (
+        <h1 style={{textAlign:'center', color:'blue'}}>Food list is working!</h1>
+    );
+}
+
+export default Welcome;
+```
+
+After confirming that it works, comment the function out right away.
+First import styled components (`import styled from 'styled-component';`), then let's get started.
+
+```js
+const Welcome  = styled.h1`
+`;
+```
+
+> Now this is a super weird syntax, yes. It is called `tagged string literal` 
+> and you can read more about them [for example here](https://wesbos.com/tagged-template-literals).
+
+> Basically what this tagged string literal feature does is allowing us to process template literals with a function, known
+> as the "tag" function. This "tag" function takes an array containing the string literals from the template, as well as
+> an array containing the evaluated expressions. Then it can manipulate these parts as needed and return a modified or completely new string.
+
+> In case a styled component we only have to care about the syntax, but below in the dropdown you can find a quick example
+> of how these can work in practice otherwise:
+
+<details>
+    <summary>(<i>click to expand</i>)</summary>
+
+```js
+    function myTagFunction(strings, ...values) {
+    // strings: an array of string literals
+    // values: an array of evaluated expressions
+    
+    // Use map to apply custom logic to each evaluated expression
+    const modifiedValues = values.map(value => {
+    // If the value is a number, square it; otherwise, leave it unchanged
+    return typeof value === 'number' ? value * value : value;
+    });
+    
+    // Combine the modified values with the original string literals
+    const result = strings.reduce((acc, str, index) => {
+    // Append the modified value and the corresponding string literal
+    return acc + str + (index < values.length ? modifiedValues[index] : '');
+    }, '');
+    
+    return result;
+    }
+    
+    const variable = 5;
+    const result = myTagFunction`The square of ${variable} is ${variable * variable}.`;
+    
+    console.log(result);
+```
+</details>
+
+So summing it up and applying it in our case: `styled.h1` is just a method, into which we pass
+some parameters in a special syntax/way between the backticks (&#96;).
+In the end, it will return a `h1`, with the styles we provide as parameters included.
+
+Inside the backticks, we add the styles. Any styles added there will directly affect the component it is added to.
+
+Classes, pseudo-classes or nested classes can be added onto an element by prefixing them by the and sign (`&`)
+instead of using a class name, tag name or an id.
+
+For example, the new styled component can look like as follows:
+
+```js
+const Welcome  = styled.h1`
+    text-align: center;
+    color: blue;
+
+    &:hover {
+        background-color: lightblue;
+    }
+`;
+```
+
+> Styled components automatically forward all children props!
+
+Styled components are especially useful in creating small bits of the web application with certain non-clashing styles.
+They cannot however "directly" take logic like regular React components, making them ideal for "dumb" display
+components or for creating layouts.
+At best what they take are default event listeners like `onClick` and such.
+Custom props can also be sent to it making the styled component dynamically configurable. For example:
