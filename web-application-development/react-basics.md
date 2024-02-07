@@ -894,3 +894,176 @@ They cannot however "directly" take logic like regular React components, making 
 components or for creating layouts.
 At best what they take are default event listeners like `onClick` and such.
 Custom props can also be sent to it making the styled component dynamically configurable. For example:
+
+```jsx
+const Welcome  = styled.h1`
+    text-align: center;
+    color: blue;
+    border: ${props => props.borderWeight}px solid blue;
+
+    &:hover {
+        background-color: yellow;
+    }
+`;
+```
+
+and passing it as usual:
+
+```jsx
+<Welcome borderWeight={3}>Food list is working</Welcome>
+```
+
+Configuring child elements with styles can be done like the following snippets.
+Notice the `<span>` put inside it!
+
+```jsx
+    <Welcome borderWeight={3}>
+        Food list is <span>working</span>
+    </Welcome>
+```
+
+With the required CSS inside the styled tagged template literal:
+
+```
+    /* ...... */
+    & span {
+        background-color: red;
+    }
+```
+
+Media queries can also be added in styled components with the usual syntax:
+
+```
+    @media (max-width: 600px) {
+        background-color: aqua;
+    }
+```
+
+> Inspect the created element in the browser. What you should see is something like this: `<h1 borderweight="3" class="sc-beySPh crzoKt">Food list is <span>working</span></h1>`
+> Notice the gibberish text in the class list. These are automatically generated classes ensuring no style applied on a styled component spams the global namespace.
+
+
+#### 4. CSS modules
+
+One another very popular method to prevent global styling conflicts and providing a way to locally scope styles are CSS modules.
+Using them involves just a few steps.
+
+To have a better example, let's first convert all the styles in `Food.css` and `Food.js` to use their own classes.
+
+It should look like this, replacing them with very common names (that would otherwise almost surely cause global styling conflicts):
+
+```css
+.food {
+  padding: 10px; 
+  display: flex;
+  min-height: 150px;
+}
+  
+.name {
+  min-width: 170px;
+}
+  
+.price {
+  min-width: 100px;
+}
+
+.food * {
+  margin: 5px;
+}
+
+.image {
+  width: 100px;
+  object-fit: cover;
+}
+
+.sale {
+  background-color: salmon;
+  color: white;
+  align-self: center;
+}
+```
+
+At the same time, make the js file use them:
+
+```jsx
+    let sale;
+    if( props.data.price<10 ) {
+        sale = <div className="sale">SALE!</div>;
+    }
+    
+    return (
+        <div className="food">
+            <h2 className="name">{props.data.name.toUpperCase()}</h2>
+            <img className="image" src={props.data.url}></img>
+            <p>{props.data.description}</p>
+            {sale}
+            <h4 className="price" style={{color: props.data.price<10 ? 'red' : 'black'}}>Price: ${props.data.price}</h4>
+        </div>
+    );
+```
+
+With that, we should be back where we started, just using regular CSS classes.
+
+Now, onto CSS modules.
+1. Rename `Food.css` to `Food.module.css`.
+2. Change the CSS import from `import './Food.css';` to `import styles from './Food.module.css';`.
+3. Lastly, replace the `className="myclass"` properties with the `className={styles.myclass}` syntax.
+
+It should look like this:
+
+```jsx
+    let sale;
+    if( props.data.price<10 ) {
+        sale = <div className={styles.sale}>SALE!</div>;
+    }
+
+    return (
+        <div className={styles.food}>
+            <h2 className={styles.name}>{props.data.name.toUpperCase()}</h2>
+            <img className={styles.image} src={props.data.url}></img>
+            <p>{props.data.description}</p>
+            {sale}
+            <h4 className={`${styles.price} ${props.data.price<10 ? styles.red : styles.black}`}>Price: ${props.data.price}</h4>
+        </div>
+    );
+```
+
+> Once again, notice how the final HTML will look like in the browser, with all the class names replaced with a new classname adhering to the "ComponentName-classname-uuid" format ensuring
+> no global styling conflicts. All classes declared in a `*.module.css` can be safely reused in other parts of the application.
+> 
+> ```html 
+> <div class="Food_food__iXK1m">
+>   <h2 class="Food_name__CwBzd">SPAGHETTI</h2>
+>   <img class="Food_image__jWq5u" src=".....">
+>   <p>Spaghetti is a long, thin, solid.....</p>
+>   <h4 class="Food_price__5+LR-" style="color: black;">Price: $10</h4>
+> </div>
+> ```
+
+To finish up this file, also make a red and black class with the respective text colours assigned.
+
+```css
+.red {
+  color: red;
+}
+
+.black {
+  color: black;
+}
+```
+
+And modify the bottom `<h4>`s className as follows:
+
+```jsx
+<h4 className={`${styles.price} ${props.data.price<10 ? styles.red : styles.black}`}>Price: ${props.data.price}</h4>
+```
+
+> For class names with dashes (`-`) in them, you have to use the bracket notation: `className={styles['class-name']}`
+
+> The extra complication in this syntax (having to use emplate literals) is caused by us having to execute a JavaScript statement in the class block to determine the text color/style that should be used.
+ 
+#### Afterword
+
+The course continues in the [React intermediate](react-basics-p2.md) notes.
+
+There is one small change I would like to do beforehand. Move the `<Welcome>` component from the `<FoodList>` down to `<App>`.
