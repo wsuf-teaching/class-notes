@@ -223,3 +223,476 @@ Let's store the food data in the `Food` component this way as well.
 > margin: 15px auto;
 > }`
 
+#### Forms and states
+
+What we did in the App component is a simple button that adds a new element with hard-coded data. Let's improve upon that
+by making a new component that is able to add a new element dynamically, through a form where we can type in the properties
+of the new food item that we want to add.
+
+Make a new component called `NewFood.js` and another called `FoodForm.js`:
+
+```jsx
+import FoodForm from "./FoodForm";
+import styles from './NewFood.module.css';
+
+function NewFood() {
+   return(
+           <div className={styles.newfood}>
+              <h2>Add a new Food!</h2>
+              <FoodForm/>
+           </div>
+   );
+}
+
+export default NewFood;
+```
+
+```jsx
+
+function FoodForm() {
+
+   return (
+           <form>
+              <label htmlFor="foodform_name">Name</label>
+              <input type="text" id="foodform_name" onChange={nameChangedHandler}/>
+              <label htmlFor="foodform_imageurl">Image URL</label>
+              <input type="text" id="foodform_imageurl"/>
+              <label htmlFor="foodform_description">Description</label>
+              <textarea id="foodform_description"/>
+              <label htmlFor="foodform_price">Price</label>
+              <input type='number' step="1" id="foodform_price"/>
+              <button type="submit">Add</button>
+           </form>
+   );
+}
+
+export default FoodForm;
+```
+
+> Notice the use of `htmlFor`, instead of just `for` as in vanilla JavaScript. Same situation as with `class` and `className`.
+
+The `NewFood.module.css` is as below:
+
+```css
+.newfood {
+   max-width: 500px;
+   margin: auto;
+}
+
+.newfood form {
+   display: flex;
+   align-items: center;
+   align-content: stretch;
+   flex-direction: column;
+}
+
+
+.newfood form * {
+   width: 100%;
+   box-sizing: border-box;
+}
+
+.newfood button {
+   margin: 10px;
+   padding: 5px;
+}
+```
+
+And make an instance of this in the `App` component once. Maybe between the `<h1>` and a `<button>` below it. Don't forget to import it!
+We can even wrap it in a `<Card>` to make it even nicer.
+
+```jsx
+    <Card>
+        <FoodForm/>
+    </Card>
+```
+
+Next, regarding the form. What we want to have is to listen to every single keystroke, getting the value the user entered
+and store it somewhere.
+The `onChange` event listener can be used for that for example. `onInput` also works, but `onChange` is more universal, and works with all
+input fields.
+
+For example, add the `onChange` event listener on the name field: `onChange={nameChangedHandler}` and of course, also declare
+the handler function above in the component:
+
+```jsx
+ const nameChangedHandler = () => {
+     console.log("name changed");
+ }
+```
+
+This is not that useful for now. This event handler function however, similarly to vanilla JavaScript, can take a parameter (representing the event),
+through which we will have access to various properties among which is the `target.value` which basically represents the
+text that is currently in the input field.
+
+```jsx
+const nameChangedHandler = (event) => {
+    console.log(event.target.value);
+}
+```
+
+Combining what we know so far, one way we can handle gathering the values of the input fields is creating one or more state for them,
+promptly assigning them in the event handler functions.
+
+```jsx
+ const [name, setName] = useState('');
+
+ const nameChangedHandler = (event) => {
+     setName(event.target.value);
+ }
+```
+
+> Once again don't forget to import `useState`: `import { useState } from "react";`!
+
+Similarly, we can employ the same way to deal with the rest of the input fields. Just below, here is how the component would look like:
+
+```jsx
+import { useState } from "react";
+
+function FoodForm() {
+
+    const [name, setName] = useState('');
+    const [imageUrl, setImageUrl] = useState('');
+    const [description, setDescription] = useState('');
+    const [price, setpPrice] = useState('');
+
+    const nameChangedHandler = (event) => {
+        setName(event.target.value);
+    }
+
+    const imageUrlChangedHandler = (event) => {
+        setImageUrl(event.target.value);
+    }
+
+    const descriptionChangedHandler = (event) => {
+        setDescription(event.target.value);
+    }
+
+    const priceChangedHandler = (event) => {
+        setPrice(event.target.value);
+    }
+
+    return (
+        <form>
+            <label htmlFor="foodform_name">
+                Name
+            </label>
+            <input 
+                type="text" 
+                id="foodform_name" 
+                onChange={nameChangedHandler}/>
+            <label htmlFor="foodform_imageurl">Image URL</label>
+            <input 
+                type="text" 
+                id="foodform_imageurl" 
+                onChange={imageUrlChangedHandler}/>
+            <label htmlFor="foodform_description">Description</label>
+            <textarea 
+                id="foodform_description" 
+                onChange={descriptionChangedHandler}/>
+            <label htmlFor="foodform_price">Price</label>
+            <input 
+                type="number" 
+                step="1" 
+                id="foodform_price" 
+                onChange={priceChangedHandler}/>
+            <button type="submit">Add</button>
+        </form>
+    );
+}
+
+export default FoodForm;
+```
+
+Managing all these individually is one (totally fine) option. There is also an alternative. Instead of having multiple small "sub states" or
+"state slices", just managing one big composite state.
+Just as a state can represent a number, a string or a boolean, it can also be an object.
+
+```jsx
+ const [userInput, setUserInput] = useState({
+   name: '',
+   imageUrl: '',
+   description: '',
+   price: ''
+});
+```
+
+One big difference would be, that in this new case, if we were to update one "piece" of the state, we have to update all of them.
+The easy way to handle updating the state in this case would be to use the spread operator, then overwrite the property that
+needs to be changed.
+
+For example in the `nameChangedHandler`:
+```jsx
+ const nameChangedHandler = (event) => {
+   setUserInput({
+      ...userInput,
+      name: event.target.value
+   });
+}
+```
+
+And in all of them:
+
+```jsx
+ const nameChangedHandler = (event) => {
+     setUserInput({
+         ...userInput,
+         name: event.target.value
+     });
+ }
+
+ const imageUrlChangedHandler = (event) => {
+     setUserInput({
+         ...userInput,
+         imageUrl: event.target.value
+     });
+ }
+
+ const descriptionChangedHandler = (event) => {
+     setUserInput({
+         ...userInput,
+         description: event.target.value
+     });
+ }
+
+ const priceChangedHandler = (event) => {
+     setUserInput({
+         ...userInput,
+         price: event.target.value
+     });
+ }
+```
+
+> In all of the cases above, we "depend on" the "previous state" to properly set the new (current) state. This is mostly fine,
+and also will mostly work find in most, but a few niche cases. React schedules state updates, it does not perform them immediately.
+> In rare cases it can potentially happen, that by the time React schedules the next update, the state have been already changed
+> by other methods or logic.
+
+When we update state however, while also depending on the previous state, an alternative form of this is recommended to use.
+Pass a function that receives the previous state at the exact time when it has to be updated, as well as which then updates the state based on that.
+
+```jsx
+    const nameChangedHandler = (event) => {
+        setUserInput((prevState)=>{
+            return {...prevState, name: event.target.value};
+        });
+        console.log(userInput);
+    }
+
+    const imageUrlChangedHandler = (event) => {
+        setUserInput((prevState)=>{
+            return {...prevState, imageUrl: event.target.value};
+        });
+    }
+
+    const descriptionChangedHandler = (event) => {
+        setUserInput((prevState)=>{
+            return {...prevState, description: event.target.value};
+        });
+    }
+
+    const priceChangedHandler = (event) => {
+        setUserInput((prevState)=>{
+            return {...prevState, price: event.target.value};
+        });
+    }
+```
+
+**Anyway, for now, let's go back to the initial version of the individual states.**
+
+```jsx
+    const [name, setName] = useState('');
+    const [imageUrl, setImageUrl] = useState('');
+    const [description, setDescription] = useState('');
+    const [price, setPrice] = useState('');
+
+    const nameChangedHandler = (event) => {
+        setName(event.target.value);
+    }
+
+    const imageUrlChangedHandler = (event) => {
+        setImageUrl(event.target.value);
+    }
+
+    const descriptionChangedHandler = (event) => {
+        setDescription(event.target.value);
+    }
+
+    const priceChangedHandler = (event) => {
+        setPrice(event.target.value);
+    }
+```
+
+Now we know how to listen to changes in the form, but so far we did not know anything exciting with that data. Next, we should
+look into how we can submit forms.
+
+We can either listen to the `onClick` event of the button, but there is a more sophisticated way to achieve the same functionality.
+Remember, that by default, a `<button>` with the `type="submit"` property will automatically submit a form. Therefore, a better way
+is to listen to the `onSubmit` event of the form itself.
+
+```jsx
+    // ...
+
+    const submitHandler = () => {}
+
+    return (
+        <form onSubmit={submitHandler}>
+           {/* ... */}
+```
+
+Beware another default functionality here. The submit button by trying to submit the form will trigger a page reload event.
+This is something we should prevent here, as we want to handle the form submission through React.
+Thus, the automatic submission should be prevented. Modify the handler function to that end:
+
+```jsx
+    const submitHandler = (event) => {
+        event.preventDefault();
+    }
+```
+
+Inside this event handler function now, we can gather up all the state values into a single object. Finally, we can `console.log` out the fresh
+object.
+
+```jsx
+const submitHandler = (event) => {
+   event.preventDefault();
+   
+   const newFood = {
+      name: name,
+      imageurl: imageUrl,
+      description: description,
+      price: price
+   };
+   
+   console.log(newFood);
+}
+```
+
+> Notice the syntax. The keys are the properties of the new object we are creating, while the values (with the same name)
+> now refer to the name of the states we are using in this component.
+
+#### Two-way binding
+
+Coming next up, pretend that by logging out the new food, we submitted it into a server for processing. What is the next step?
+Clearing the input forms.
+
+First, if we clear a state by setting it to an empty string or such, it will not remove the entered strings from the form controls.
+Second, grabbing the JSX elements individually and then setting their value properties to empty strings is also tiresome.
+
+Good news is, that (unknowingly) we already did set up one direction of the two-way binding. We already listen to changes in
+the form elements. The other direction is simply "feeding" the data back to the elements through setting the `value`property to
+the states. That means that when we change a state, basically we also change the input, and the other way around of course.
+
+```jsx
+        <form onSubmit={submitHandler}>
+            <label htmlFor="foodform_name">
+                Name
+            </label>
+            <input 
+                type="text" 
+                id="foodform_name"
+                value={name}
+                onChange={nameChangedHandler}/>
+            <label htmlFor="foodform_imageurl">Image URL</label>
+            <input 
+                type="text" 
+                id="foodform_imageurl"
+                value={imageUrl}
+                onChange={imageUrlChangedHandler}/>
+            <label htmlFor="foodform_description">Description</label>
+            <textarea 
+                id="foodform_description" 
+                value={description}
+                onChange={descriptionChangedHandler}/>
+            <label htmlFor="foodform_price">Price</label>
+            <input 
+                type="number" 
+                step="1" 
+                id="foodform_price" 
+                value={price}
+                onChange={priceChangedHandler}/>
+            <button type="submit">Add</button>
+        </form>
+```
+
+Making this change would not result anything noticeable at the first look. However, now if we "null out" the states in the `submitHandler` method,
+the input fields will be similarly reset to empty values.
+
+Put the following code to the end of the `submitHandler`, right below the `console.log` call:
+
+```jsx
+setName('');
+setImageUrl('');
+setDescription('');
+setPrice('');
+```
+
+#### useRef
+
+If we don't really plan on changing the values of the states, another option React gives is the `useRef` hook.
+References provide the (same) two-way binding out of the box, with less boilerplate code needed.
+
+Delete all, but the `submitHandler` method with a list of references as follows. Don't forget to import `useRef` the very same way we
+imported `useState`.
+
+```jsx
+ const nameRef = useRef();
+ const imageUrlRef = useRef();
+ const descriptionRef = useRef();
+ const priceRef = useRef();
+```
+
+In the JSX part, replace all the `value` and `onChange` properties with the `ref` property.
+
+```jsx
+     <form onSubmit={submitHandler}>
+         <label htmlFor="foodform_name">
+             Name
+         </label>
+         <input 
+             type="text" 
+             id="foodform_name"
+             ref={nameRef}/>
+         <label htmlFor="foodform_imageurl">Image URL</label>
+         <input 
+             type="text" 
+             id="foodform_imageurl"
+             ref={imageUrlRef}/>
+         <label htmlFor="foodform_description">Description</label>
+         <textarea 
+             id="foodform_description" 
+             ref={descriptionRef}/>
+         <label htmlFor="foodform_price">Price</label>
+         <input 
+             type="number" 
+             step="1" 
+             id="foodform_price" 
+             ref={priceRef}/>
+         <button type="submit">Add</button>
+     </form>
+```
+
+Finally, we can access values in the submitHandler function by using the `current.value` property of the references.
+
+```jsx
+ const submitHandler = (event) => {
+     event.preventDefault();
+
+     const newFood = {
+         name: nameRef.current.value,
+         imageurl: imageUrlRef.current.value,
+         description: descriptionRef.current.value,
+         price: priceRef.current.value
+      };
+      
+     console.log(newFood);
+
+     nameRef.current.value = '';
+     imageUrlRef.current.value = '';
+     descriptionRef.current.value = '';
+     priceRef.current.value = '';
+ }
+```
+
+> Usually it is not a good idea to directly manipulate the value of the input elements like this in React, but in this
+> trivial form submission case, it is probably fine!
