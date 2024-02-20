@@ -696,3 +696,214 @@ Finally, we can access values in the submitHandler function by using the `curren
 
 > Usually it is not a good idea to directly manipulate the value of the input elements like this in React, but in this
 > trivial form submission case, it is probably fine!
+
+
+#### Validation
+
+Before going further, here is a great chance to also introduce validation in React. Even though the final validation would be
+done on the server, as we cannot trust validation in the browser - it is still a good idea to implement a client-side
+validation as well, as it can provide feedback to the users much more readily.
+
+In a trivial example, we can just stop the code execution in case we encounter an incorrect value. The following block should go
+inside the `submitHandler`, between the `preventDefault` and the `const newFood` lines:
+
+```jsx
+if(nameRef.current.value.trim() == '') {
+   return;
+}
+```
+
+An improvement to this can also show some feedback to the user regarding the nature of the failed validation.
+To this end, we will utilize one more state. A state that will tell us about whether a field or fields are valid or not.
+We want to start with `true`, so that the name initially is valid. Then set it to `false` if the name turns out to be invalid after all.
+
+```jsx
+const [nameIsValid, setNameIsValid] = useState(false);
+```
+
+In the conditional block shown above, if the name is invalid, we set this state to `false` and return out of the function.
+Otherwise, we set it to `true`, continuing on with the rest of the instructions.
+
+```jsx
+ const submitHandler = (event) => {
+     event.preventDefault();
+
+     if(nameRef.current.value.trim() == '') {
+         setNameIsValid(false);
+         return;
+     }
+
+     setNameIsValid(true);
+     
+     // ...
+```
+
+Lastly, we can display some feedback text conditionally, based on the state of the `nameIsValid` property the following way.
+Put it below the `<input>` of the name.
+
+```jsx
+{!nameIsValid && <span style={{color:"red"}}>Name cannot be empty!</span>}
+```
+
+#### Child-to-parent communication
+
+Now, we have all the data gathered and validated. It is also in a single object. But technically, we have no use for this
+data here in the `FoodForm` component. We made this component so it better separates the adding/validation logic from the
+rest of the application - from displaying the data. What we want is to add this new object to the list of foods in the `App` component.
+Notice, that between the two of them: `App` and `FoodForm` we also have one additional component, `NewFood`.
+
+Let's start in the intermediary component (`NewFood`).
+Add a new function that "handles" a new food when added. For now, let's just log out the data it receives as a parameter.
+
+```jsx
+const addNewFoodHandler = (newFood) => {
+    console.log(newFood);
+}
+```
+
+This function should be passed as a "custom listener" function to the `FoodForm` component in the JSX block. Even though we write it
+as `onSomething`, it is still just a prop, and a prop can take functions as well, not just primitive values or objects.
+
+```jsx
+<FoodForm onAddNewFood={addNewFoodHandler}/>
+```
+
+Inside `FoodForm`, simply call the new method passed as a prop inside the `submitHandler` function.
+Don't forget to pass the props as well.
+
+```jsx
+function FoodForm(props) {
+```
+
+```jsx
+props.onAddNewFood(newFood);
+```
+
+And now let's do the same process one more level.
+
+Inside `App`:
+
+```jsx
+const addNewFoodHandler = (newFood) => {
+    setFoods([...foods,newFood]);
+}
+```
+
+```jsx
+<NewFood onAddNewFood={addNewFoodHandler}/>
+```
+
+Then finally replace the `console.log` inside the `addNewFoodHandler` in the `NewFood` component with the passed prop function call.
+
+```jsx
+function NewFood(props) {
+
+    const addNewFoodHandler = (newFood) => {
+        props.onAddNewFood(newFood);
+    }
+    
+    // ...
+```
+
+#### useEffect, getting remote data
+
+Continuing forward, notice how we have all the initial food data hardcoded inside the "mockdata" folder. For testing purposes,
+it is mostly fine, however in the end we want to get all our data from a remote server.
+
+To "simulate" that, attached you can find a `server.py` in the resources folder.
+To use it, you should have [Python](https://www.python.org/downloads/), pip installed.
+With pip, also install `flask` and `flask-cors`.
+[Here](/frontend1/test_server_setup.md#2-installing-python), you can find detailed instructions on how to install them all and run the server.
+The endpoint that should be queried is `/foods`, making the full URL needed by default `http://127.0.0.1:5000/foods`.
+
+When sent a GET request, or visited from the browser, you should see all the foods listed as JSON data.
+
+![foods](https://i.imgur.com/kaQneVI.png)
+
+That is what we will need and use in this section.
+
+We already learned how to make web calls in JavaScript as part of frontend2. One of the functions JavaScript provides us out of the box
+is `fetch` [fetch description here](/frontend2/javascript-async-promise-fetch.md#fetch).
+There are alternative methods and libraries like [axios](https://www.npmjs.com/package/axios) but fetch can also be used in React just fine.
+
+So how to use fetch to fetch all the needed data to set up the initial states?
+Let's just try putting the fetch call inside the `App` component, somewhere, just before the return block.
+
+> First, also make the foods state empty as a starting point, we no longer need the `mockFoods` array.
+> `const [foods, setFoods] = useState();`
+
+> Also, as this would crash our application right now, as inside the `FoodList` component, we cannot
+> map over an empty object, add a null check in the return block changing this line:
+> `{ props.foods && props.foods.map((food,i) => `
+
+First, just fetch it and log both (either) the received data and the error.
+
+```jsx
+fetch('http://127.0.0.1:5000/foods')
+ .then(response => response.json())
+ .then(data => console.log(data))
+ .catch(error => console.log(error));
+```
+
+With a successful call, we should see something like this in our browser console:
+![succfetch](https://i.imgur.com/uEVrFMq.png)
+And with an unsuccessful one, something along the lines of these:
+![failfetch1](https://i.imgur.com/AV61E2k.png)
+![failfetch2](https://i.imgur.com/9RmK54m.png)
+
+Now we are ready to use this JSON data in the application in earnest.
+
+```jsx
+fetch('http://127.0.0.1:5000/foods')
+ .then(response => response.json())
+ .then(data => setFoods(data))
+ .catch(error => console.log(error));
+```
+
+What we will see when running this code is not what we would first expect. It kinda works, but if we add a new food manually,
+it almost immediately disappears, replaced with the original list.
+Why? Because we set state! And when we set a state, and the component where the state is will be reloaded.
+After the component is reloaded, fetch is called again, where we set the state... You can see where this goes.
+An infinite reload loop is triggered, and the only reason we even see some elements being displayed is due
+to the time the asynchronous fetch call takes. If it were instantaneous, we would see nothing, as the component
+would be reloaded before even reaching the return block.
+
+The main task of a React application is to render the UI elements and to react to various user inputs, even to manipulate
+the DOM accordingly. Everything else is basically a "side effect" or "effect" in short. Sending HTTP requests,
+storing data in browser, managing timers, etc. These are all terribly useful stuff, that we need, but they are not
+the "core" of React. They are not something that we can only do due to React, they are not something that React cares about.
+They are "side effects". Therefore, these must happen outside the normal component evaluation circle of React.
+(Remember how a component reloads when a state has changed!)
+
+In situations like this, where for example we want to execute some code when the component first loads, only once,
+or depending upon some state, the `useEffect` hook is our friend.
+
+`useEffect` is imported similarly to the `useState` hook: `import { useEffect } from 'react';`.
+The rest of its usage is a little bit different though.
+It kind of looks like this:
+
+```jsx
+useEffect( () => {}, [dependencies]);
+```
+
+Here, the first argument is a method that we want to call, that should be executed after every component evaluation if the 
+specified dependencies have changed and also on the very first run of the component (as the dependencies loading for
+the first time is considered as them being changed). Inside this function should code snippets with side effects be executed.
+Then, the second argument is an array of dependencies - if any one of these change, the method in the first parameter will run.
+
+> Leaving the dependencies array empty (`[]`) will mean that the `useEffect` will only run once - as nothing cannot change. :)
+
+Import useEffect, and write the required hook setting the state accordingly, only running once:
+
+```jsx
+import React, { useState, useEffect } from 'react';
+```
+
+```jsx
+  useEffect(()=>{
+   fetch('http://127.0.0.1:5000/foods')
+           .then(response => response.json())
+           .then(data => setFoods(data))
+           .catch(error => console.log(error));
+},[])
+```
