@@ -907,3 +907,149 @@ import React, { useState, useEffect } from 'react';
            .catch(error => console.log(error));
 },[])
 ```
+
+Another example where we can use `useEffect`, now with dependencies is in form submissions.
+We can make form submission functions leaner, separating concerns a little bit by using `useEffect`.
+
+To practice a little bit of both forms and effects, make a new component called `Login` and call it inside the `App` component:
+
+Making the `Login` component:
+
+```jsx
+import { useState, useEffect } from 'react';
+import styles from './Login.module.css';
+
+function Login() {
+
+   const [email, setEmail] = useState('');
+   const [password, setPassword] = useState('');
+
+   const emailChangedHandler = (event) => {
+      setEmail(event.target.value);
+   }
+
+   const passwordChangedHandler = (event) => {
+      setPassword(event.target.value);
+   }
+
+   const submitHandler = (event) => {
+      event.preventDefault();
+      console.log(email);
+      console.log(password);
+   }
+
+   return (
+           <form className={styles.login} onSubmit={submitHandler}>
+              <h2>Log in!</h2>
+              <label htmlFor="login_email">E-mail</label>
+              <input
+                      type="text"
+                      id="login_email"
+                      value={email}
+                      onChange={emailChangedHandler}
+              />
+              <label htmlFor="login_password">Password</label>
+              <input
+                      type="password"
+                      id="login_password"
+                      value={password}
+                      onChange={passwordChangedHandler}
+              />
+              <button type="submit">Login</button>
+           </form>
+   );
+}
+
+export default Login;
+```
+
+The related `Login.module.css`:
+
+```css
+.login {
+    max-width: 500px;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    align-content: stretch;
+    flex-direction: column;
+}
+
+.login * {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.login button {
+    margin: 10px;
+    padding: 5px;
+}
+```
+
+In the top of `App`:
+
+```jsx
+import Login from './components/Login';
+```
+
+Maybe between the `<h1>` and the another `<Card>`:
+
+```jsx
+<Card>
+  <Login/>
+</Card>
+```
+
+The effect logic should be as follows:
+
+```jsx
+ const [formIsValid, setFormIsValid] = useState(false);
+
+useEffect(()=>{
+   setFormIsValid(
+           email.includes('@') && password.trim().length > 6
+   );
+},[email, password])
+```
+
+And modify the submit button based on the value of this new `formIsValid` state either enabling or disabling it
+
+```jsx
+<button type="submit" disabled={!formIsValid}>Login</button>
+```
+
+Basically, what we did was move out (part) of the validation logic to a single place instead of listening
+to each little individual events on their own handler functions trying to juggle many smaller states accordingly.
+We can still do that, with individual state feedbacks, but now the `useEffect` hook here
+manages a "global" validity variable, listening to all the input field state changes.
+
+#### Adding a loading text
+
+A little thing that can always make an application nicer is to show "Loading" texts or a spinning icon while content is loading.
+Content is loading, while for example we make our fetch call and waiting for the server to respond.
+
+With React, doing this is trivially easy due to its declarative nature.
+
+> To simulate slow network, comment in `import time` at the top of the server script, as well as the call to
+> `time.sleep(1)` (remove the "#" signs) then restart the python server.
+
+Remember, when a state is changed, React will trigger a full component reload. This is the reason why at first the food list
+shows up as empty, then after we receive the data, they will all pop in to the DOM.
+Instead of displaying nothing, we can make the component display a "Loading" text instead while waiting for the data, so while
+the data is "null", then display the `FoodList` accordingly after React reloads the component.
+
+We can use just a null check for this just fine.
+Wrap the `FoodList` component in `App` with the following snippet:
+
+```jsx
+{foods && <FoodList foods={foods}/>}
+{!foods && <h4>Loading...</h4>}
+```
+
+Or in a little shorter way:
+
+```jsx
+{foods ? <FoodList foods={foods}/> : <h4>Loading...</h4>}
+```
+
+An alternative way could be using an additional state that knows whether the list is loading or not.
