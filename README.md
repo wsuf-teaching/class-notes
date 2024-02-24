@@ -30,6 +30,7 @@
     - [3.c Webpack starter kit](https://github.com/wsuf-teaching/webpack-starter-kit)
     
 [4. Web Application Development](web-application-development/)
+  - [4.X React exercises](web-application-development/react-exercises.md)
   - [4.1 React installation](web-application-development/react-install.md)
   - [4.2 React basics](web-application-development/react-basics.md)
   - [4.3 React basics - part 2](web-application-development/react-basics-p2.md)
