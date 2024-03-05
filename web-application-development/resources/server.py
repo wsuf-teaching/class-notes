@@ -7,7 +7,7 @@ CORS(app)
 
 @app.route('/foods', methods=['GET'])
 def get_json_data():
-    #time.sleep(1)
+    time.sleep(1)
     data = [
                {
                    "name": "Spaghetti",
@@ -30,6 +30,17 @@ def get_json_data():
            ]
 
     return jsonify(data)
+
+@app.route('/foods/<int:food_id>', methods=['GET'])
+def get_single_data(food_id):
+    single_food_data = {
+        "name": "Spaghetti nr." + str(food_id),
+        "url": "https://www.bowlofdelicious.com/wp-content/uploads/2023/07/one-pot-spaghetti-with-meat-sauce-square-500x375.jpg",
+        "description": "Spaghetti is a long, thin, solid, cylindrical pasta. It is a staple food of traditional Italian cuisine.",
+        "price": food_id*10
+    }
+    return jsonify(single_food_data)
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

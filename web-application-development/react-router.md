@@ -326,4 +326,235 @@ and so on....
 Remember to include that new component to prevent errors.
 
 
+#### Active links
 
+In many applications, as part of the navigation menu, what we also want to have is some highlight on the active link.
+Luckily React Router has this covered as well. To achieve this, all we have to do is replace `Link` with `NavLink`.
+`NavLink` will have one extra property called `activeClassName`. If the route it points to is matched, that class will be applied on the link
+achieving the desired functionality.
+
+It automatically applies the `active` class to the currently active `NavLink`.
+Alternatively, both its `className` and `style` properties can take a function to set styles or classes to its `isActive`, `isPending` and
+`isTransitioning` state.
+
+Replace all `Link` with a `NavLink`. Also import it. No further changes necessary.
+
+Edit `index.css`:
+
+```css
+ul li a.active {
+  border: 1px dashed black;
+}
+```
+
+Alternatively, setting some custom styles by passing it a function:
+
+```jsx
+const customNavLinkStyle = ({ isActive, isPending, isTransitioning }) => {
+    return {
+        fontWeight: isActive ? "bold" : "",
+        color: isPending ? "red" : "black",
+        viewTransitionName: isTransitioning ? "slide" : "",
+    };
+};
+```
+
+and
+
+```jsx
+<li><NavLink to="/hello" style={customNavLinkStyle}>Hello</NavLink></li>
+<li><NavLink to="/login" style={customNavLinkStyle}>Login</NavLink></li>
+<li><NavLink to="/" style={customNavLinkStyle}>Home</NavLink></li>
+```
+
+#### Nested routes
+
+React Router will always much the most specific route for a given path.
+To make this work, in `App`, make the `Hello` component match any subpath following "hello". Notice the "`*`"!
+
+```jsx
+<Route path="/hello/*" element={<Hello/>}/>
+```
+
+Now we can declare a subroute either here or inside the `Hello` component. Let's do the latter, modifying the component as follows:
+
+```jsx
+import { Routes, Route } from "react-router-dom";
+
+function Hello() {
+    return (
+        <>
+            <h1>Hello!</h1>
+            <Routes>
+                <Route path="world" element={<h1>World</h1>}></Route>
+            </Routes>
+        </>
+    );
+}
+
+export default Hello;
+```
+
+Now if we type "/hello" into the URL, it will only show "Hello!". Typing "/hello/world" will display "Hello! World! as expected.
+
+#### Programmatic navigation
+
+If we don't want to see this page however when we visit "/hello/somethingelse", some modifications have to be made.
+The "main" route has to become an `index` route displaying the content that we want to be displayed normally.
+Then, at the end of the `Routes` block, declare a catch-all route that `Navigate` elsewhere, for example to the home screen, or to a 404 page.
+
+```jsx
+import { Routes, Route, Navigate } from "react-router-dom";
+
+function Hello() {
+    return (
+        <>
+            <Routes>
+                <Route index element={<h1>Hello</h1>} />
+                <Route path="world" element={<h1>World</h1>}></Route>
+                <Route path="*"element={<Navigate to="/404" replace />}/>
+            </Routes>
+        </>
+    );
+}
+
+export default Hello;
+```
+
+> We don't have a "404" route, but precisely because of that, the catch-all route declared in the `App` component will
+> catch it and display that text: `<Route path="*" element={<h1>404 not found</h1>} />`.
+
+This is one example of how we can programmatically navigate to a different page.
+
+Another way to achieve the same functionality is to use the `useNavigate` hook and function.
+
+Using that hook is trivially easy with three steps:
+1) import it: `import {useNavigate} from "react-router-dom";`
+2) call it in the component: `const navigate = useNavigate();`
+3) use it: `navigate("/path/we/want/to/navigate");`
+
+For example, we can use it to navigate away from a page that is only available for certain users, or when a user is logged in.
+Let's simulate that by creating a secret page.
+
+#### Route parameters
+
+Router have not only fixed parts, but can also dynamic ones called parameters.
+In a `Route` declaration it appears as `:nameofparam`.
+Add a new route linking to a food detail page in `App`:
+
+```jsx
+<Route path="/food/:foodId" element={<FoodDetails/>}/>
+```
+
+> Don't forget to import it after creating it just below!
+
+Create that new page component:
+
+```jsx
+function FoodDetails() {
+    return (
+        <h1>Food Details works!</h1>
+    );
+}
+
+export default FoodDetails;
+```
+
+For now on, it does not handle any parameters, but will load both when we visit "http://localhost:3000/food/" and
+"http://localhost:3000/food/1".
+
+To make the component catch this optional parameter, the `useParams` hook needs to be imported and used from `react-router-dom`.
+We also use object deconstruction to retrieve the `foodId` param out of potentially many more:
+
+```jsx
+import { useParams } from "react-router-dom";
+
+function FoodDetails() {
+
+    let {foodId} = useParams();
+
+    return (
+        <>
+            <h1>Food Details works!</h1>
+            <div>The ID of the current food is: {foodId}</div>
+        </>
+
+    );
+}
+
+export default FoodDetails;
+```
+
+This is also a good place to navigate away from this page, if for example the `foodId` is not correct. For now, just simulate it by
+"not correct" being not a number.
+
+```jsx
+import { useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+
+function FoodDetails() {
+    const navigate = useNavigate();
+    let {foodId} = useParams();
+
+    useEffect(()=>{
+        if(isNaN(foodId)) navigate("/");
+    },[]);
+
+    return (
+        <>
+            <h1>Food Details works!</h1>
+            <div>The ID of the current food is: {foodId}</div>
+        </>
+    );
+}
+
+export default FoodDetails;
+```
+
+Finally, we can also make a web call to the appropriate api endpoint, fetching data, putting in a state and displaying it:
+
+```jsx
+import { useParams, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+
+function FoodDetails () {
+
+    let {foodId} = useParams();
+    const navigate = useNavigate();
+    const [foodItem, setFoodItem] = useState();
+
+
+    useEffect(()=>{
+        if(isNaN(foodId)) {
+            navigate('/404');
+        } else {
+            fetch("http://localhost:5000/foods/"+foodId)
+                .then(response => response.json())
+                .then(data => {setFoodItem(data)})
+                .catch(error => console.log(error));
+        }
+    },[])
+
+
+
+
+    return (
+        <>
+            <h1>Food detail works!</h1>
+            <div>The ID of the current food is: {foodId}</div>
+            {foodItem && (
+                <p>
+                    <hr/>
+                    <h1>{foodItem.name}</h1>
+                    <p>{foodItem.description}</p>
+                    <h5>Price: ${foodItem.price}</h5>
+                </p>
+            )}
+        </>
+    );
+};
+
+export default FoodDetails;
+```
+
+> The included server was modified, so any valid food Id will be accepted. It will return a slightly different food name and price based on it. :)
