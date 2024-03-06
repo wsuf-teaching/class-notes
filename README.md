@@ -35,3 +35,4 @@
   - [4.2 React basics](web-application-development/react-basics.md)
   - [4.3 React basics - part 2](web-application-development/react-basics-p2.md)
   - [4.4 React router](web-application-development/react-router.md)
+  - [4.5 React context](web-application-development/react-context.md)
