@@ -31,8 +31,10 @@
     
 [4. Web Application Development](web-application-development/)
   - [4.X React exercises](web-application-development/react-exercises.md)
+  - [4.Y Food order application with React](https://github.com/wsuf-teaching/junkbank-frontend/tree/react)
   - [4.1 React installation](web-application-development/react-install.md)
   - [4.2 React basics](web-application-development/react-basics.md)
   - [4.3 React basics - part 2](web-application-development/react-basics-p2.md)
   - [4.4 React router](web-application-development/react-router.md)
   - [4.5 React context](web-application-development/react-context.md)
+
