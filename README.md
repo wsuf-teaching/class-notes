@@ -41,4 +41,7 @@
   - [5.X - http server]
   - [5.1 - selected topics on networking](/networking/selected-topics-on-networking.md)
   - [5.2 - HTTP protocol](/networking/http-protocol.md)
-
+[6. Databases]
+  - [6.X - setting up MySQL locally](/databases/mysql-install.md)
+  - [6.1 - Database theory](/databases//databases.md)
+  - [6.2 - ER model](/databases/ermodeling.md)
