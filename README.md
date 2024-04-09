@@ -39,7 +39,7 @@
   - [4.5 React context](web-application-development/react-context.md)
 
 [5. Networking](/networking/)
-  - [5.X - http server]
+  - [5.X - http server](/networking/resources/httpserver.py)
   - [5.1 - selected topics on networking](/networking/selected-topics-on-networking.md)
   - [5.2 - HTTP protocol](/networking/http-protocol.md)
 
