@@ -37,11 +37,13 @@
   - [4.3 React basics - part 2](web-application-development/react-basics-p2.md)
   - [4.4 React router](web-application-development/react-router.md)
   - [4.5 React context](web-application-development/react-context.md)
-[5. Networking]
+
+[5. Networking](/networking/)
   - [5.X - http server]
   - [5.1 - selected topics on networking](/networking/selected-topics-on-networking.md)
   - [5.2 - HTTP protocol](/networking/http-protocol.md)
-[6. Databases]
+
+[6. Databases](/databases/)
   - [6.X - setting up MySQL locally](/databases/mysql-install.md)
   - [6.1 - Database theory](/databases//databases.md)
   - [6.2 - ER model](/databases/ermodeling.md)
