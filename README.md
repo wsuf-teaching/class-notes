@@ -47,3 +47,4 @@
   - [6.X - setting up MySQL locally](/databases/mysql-install.md)
   - [6.1 - Database theory](/databases//databases.md)
   - [6.2 - ER model](/databases/ermodeling.md)
+  - [6.3 - SQL create, alter, drop, insert](/databases/sql-create-alter-drop-insert.md)
