@@ -205,6 +205,8 @@ ADD CONSTRAINT chk_price CHECK (price > 0);
 
 > We will look at the `FOREIGN KEY` constraint a little later.
 
+> Similarly to `MODIFY COLUMN`, we can also `ADD COLUMN` and `DROP COLUMN` to respectively add a new column or delete an existing one.
+
 Named constraints (uk_name, chk_price from above) can be easily removed.
 
 ```sql
@@ -256,5 +258,32 @@ INSERT INTO foods VALUES (NULL, 'Pasta', NULL, 12.99, NULL);
 ```
 
 > Sending `NULL` into an `AUTO_INCREMENT` column will replace it with the actual automatically incremented ID.
+
+## Deleting data
+
+To delete all data from a table, the `DELETE` command can be used.
+
+```sql
+delete from foods;
+```
+
+However, this will - in most SQL dialects throw a "safe update error".
+This is due to a safety feature being triggered when trying to delete (or update) rows in a table without specifying a key column in the where clause.
+
+We can solve this problem in two ways.
+
+1) Turn safe update off for this operatiopn.
+
+```SQL
+SET SQL_SAFE_UPDATES=0;
+delete from foods;
+SET SQL_SAFE_UPDATES=1;
+```
+
+2) "Tricking" SQL by supplying a statement that evaluates to true for all rows. For example:
+
+```sql
+DELETE FROM foods WHERE id>0;
+```
 
 
