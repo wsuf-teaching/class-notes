@@ -114,3 +114,11 @@ Afterwards you can execute `npx create-react-app my-app` - where "my-app" is the
 > Alternatively, `npm init react-app my-app` should also work.
 
 Go into the newly created folder `cd my-app`, then use the automatically created launch script to start the react application: `npm start`.
+
+### For existing projects
+
+If you already have a React based application on your computer with a `package.json` having react in its list of dependencies, you simply have to install it with npm:
+
+```
+npm install
+```
