@@ -674,3 +674,128 @@ INNER JOIN foods ON order_items.food_id = foods.id
 WHERE DATE(orders.order_date) = '2024-04-17';
 ```
 
+Order values:
+
+```sql
+  SELECT o.id, SUM(oi.quantity * f.price) AS total_order_value
+  FROM orders o
+  JOIN order_items oi ON o.id = oi.order_id
+  JOIN foods f ON oi.food_id = f.id
+  GROUP BY o.id
+```
+
+Average order value:
+
+```sql
+SELECT AVG(total_order_value) AS average_order_value
+FROM (
+    SELECT o.id, SUM(oi.quantity * f.price) AS total_order_value
+    FROM orders o
+    JOIN order_items oi ON o.id = oi.order_id
+    JOIN foods f ON oi.food_id = f.id
+    GROUP BY o.id
+) AS order_values;
+```
+
+### Self joins
+
+```sql
+CREATE TABLE person (
+    id INT PRIMARY KEY,
+    name VARCHAR(100),
+    mother_id INT,
+    father_id INT,
+    FOREIGN KEY (mother_id) REFERENCES person(id),
+    FOREIGN KEY (father_id) REFERENCES person(id)
+);
+
+INSERT INTO person (id, name, mother_id, father_id) VALUES
+(1, "Alice",NULL,NULL),
+(2, "Bob",NULL,NULL),
+(3, "Charlie",1,2),
+(4, "David",1,2),
+(5, "Emily",NULL,NULL),
+(6, "Frank",NULL,NULL),
+(7, "George",5,6),
+(8, "Hannah",5,6),
+(9, "Isabella",NULL,NULL),
+(10, "Jack",NULL,NULL),
+(11, "Kate",9,10),
+(12, "Luke",9,10),
+(13, "Michael",9,10),
+(14, "Nora",8,3),
+(15, "Oliver",8,3),
+(16, "Penelope",11,7),
+(17, "Quincy",16,15);
+```
+
+Mothers.
+
+```sql
+SELECT p1.name AS person_name, p2.name AS mother_name
+FROM person p1
+LEFT JOIN person p2 ON p1.mother_id = p2.id;
+
+SELECT DISTINCT p2.name AS mother_name
+FROM person p1
+JOIN person p2 ON p1.mother_id = p2.id
+WHERE p1.mother_id IS NOT NULL;
+```
+
+People who are parents.
+
+```sql
+SELECT DISTINCT parent.name AS parent_name
+FROM person parent
+JOIN person child ON parent.id = child.mother_id OR parent.id = child.father_id;
+```
+
+Parents. Separate mother and father. / WITH INNER /
+
+```sql
+SELECT 
+    p.name AS person,
+    m.name AS mother,
+    f.name AS father
+FROM 
+    person AS p
+LEFT JOIN 
+    person AS m ON p.mother_id = m.id
+LEFT JOIN 
+    person AS f ON p.father_id = f.id;
+```
+
+Not parents.
+
+```sql
+SELECT p.name AS person_name
+FROM person p
+LEFT JOIN person child ON p.id = child.mother_id OR p.id = child.father_id
+WHERE child.id IS NULL;
+
+SELECT p.name AS person_name
+FROM person p
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM person child
+    WHERE p.id = child.mother_id OR p.id = child.father_id
+);
+
+SELECT p.name AS person_name
+FROM person p
+WHERE p.id NOT IN (
+    SELECT mother_id FROM person WHERE mother_id IS NOT NULL
+    UNION
+    SELECT father_id FROM person WHERE father_id IS NOT NULL
+);
+```
+
+Grandparents.
+
+```sql
+SELECT DISTINCT grandparent.name AS grandparent_name
+FROM person grandparent
+JOIN person child ON grandparent.id = child.mother_id OR grandparent.id = child.father_id
+JOIN person grandchild ON child.id = grandchild.mother_id OR child.id = grandchild.father_id;
+```
+
