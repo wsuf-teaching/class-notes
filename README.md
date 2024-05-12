@@ -50,3 +50,4 @@
   - [6.3 - SQL create, alter, drop, insert](/databases/sql-create-alter-drop-insert.md)
   - [6.4 - SQL selects, joins](/databases/sql-selects.md)
   - [6.5 - SQL views, stored procedures, indexes](/databases/sql-views-stored-procedures.md)
+  - [6.6 - NoSQL, MongoDB deep dive](/databases/mongodb.md)
