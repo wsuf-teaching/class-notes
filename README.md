@@ -51,3 +51,6 @@
   - [6.4 - SQL selects, joins](/databases/sql-selects.md)
   - [6.5 - SQL views, stored procedures, indexes](/databases/sql-views-stored-procedures.md)
   - [6.6 - NoSQL, MongoDB deep dive](/databases/mongodb.md)
+
+[7. Backend I](/backend1)
+  - [7.1 Python - basics](/backend1/python-basics.md)
