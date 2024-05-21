@@ -277,3 +277,150 @@ gen_list = (i ** 2 for i in range(10) if i % 2 == 0)        # generator object
 for item in gen_list:  
     print( item )  
 ```
+
+## Functions
+
+Above, we have already seen an example or two of functions. Lets see a few more useful features of python regarding functions.
+
+A function can return a value:
+
+```python
+def add(a, b):
+	c = a + b
+	return c
+```
+
+Or multiple values at the same time:
+
+```python
+def multipleReturn():
+    return 10, [20,30], "Hello World"
+a, b, c = multipleReturn()
+print(a, b, c)
+```
+
+Or none at all. In these cases the return value of the function would be `None`.
+
+```python
+def printSomething():
+    print("Something")
+```
+
+With the use of "keyword arguments", we can add the function arguments in any order using their names:
+
+```python
+def printUserInfo(name, age, address):
+    print(name, age, address)
+printUserInfo(age=20,address="Budapest",name="Alice")
+
+# the order can be "combined" as well
+printUserInfo("Bob",address="Rome",age=30)
+```
+
+Functions can also take default argument values. In this case, passing those values is optional.
+
+```python
+def greet(name, message="Hello"):
+    print(f"{message}, {name}!")
+greet("Harry")
+greet("General Kenobi", "Hello there")
+```
+
+The number of parametres can also be variable. By convention, unnamed parametres are put into the `*args` list, and named parametres are put into the `*kwargs` dictionary:
+
+```python
+def example_func(name, *args, **kwargs):
+    print("Regular parameter:")
+    print(f"Name: {name}")
+
+    print("\nVariable-length arguments (*args):")
+    for arg in args:
+        print(arg)
+
+    print("\nKeyword arguments (**kwargs):")
+    for key, value in kwargs.items():
+        print(f"{key}: {value}")
+
+example_func("John", "apple", "banana", "cherry", country="USA", age=30)
+```
+
+## IO
+
+We have already seen how we can output data, by printing it out to the console using the `print` function.
+
+The opposite direction, listening to some input is done through the `input` function which can also print out some text as well before prompting the user for input.
+
+```python
+myinput = input("Please enter a string: ")
+```
+
+## File handling
+
+To open a file, we use the `open()` function. 
+It takes the filename and mode as parameters. The mode can be:
+* `r`: Read mode (default). Opens the file for reading. Raises an error if the file does not exists.
+* `w`: Write mode. Opens the file for writing. Creates a new file if it doesn't exist or truncates the file if it exists.
+* `a`: Append mode. Opens the file for writing. Creates a new file if it doesn't exist. Writes to the end of the file if it exists.
+* `r+`: Read and write mode. Opens the file for reading and writing. The handle is put at the start of the file. Overwrites contents character by character. Raises an error if the file does not exists.
+* `w+`: Write and read mode. Any write operation will overwrite contens of the file. Creates the file if it does not exists.
+* `a+`: Append and read mode. Read and write, creates the file if it does not exists. The handle is put to the end of the file, and any data written will be put at the end after the existing data.
+
+
+```python
+file = open("myfile.txt", "r")
+```
+
+We can read the entire content of a file or a specified number of characters/lines/all lines using `read()`, `readline()` and `readlines()` respectively.
+
+```python
+content = file.read() # reads the entire content
+
+line = file.readline() # reads a single line (the next one)
+
+for line in file: # iterating through all the lines one by one
+	print(line)
+	
+lines = file.readlines() # reads all lines into an array
+
+for line in lines: # iterating through all the lines again
+    print(line)
+	
+```
+
+We can also write to a file using the `write()` or `writelines()` methods. 
+To use it, we have to make sure the file is opened in write or append mode.
+
+```python
+file.write("Hello world!")
+
+file.writelines(["hello", "world"])
+```
+
+The `seek()` method allows us to move the cursor to a specific position in the file. While
+the `tell()` method returns the current cursor position in the file.
+
+```python
+file.seek(position)
+
+position = file.tell()
+```
+
+
+Finally, after performing operations on a file, it's important to close it using the `close()` method.
+
+```python
+file.close()
+```
+
+An alternative to having to manually close the file, we can also use the `with` statement that automatically closes
+the file (or other, similar resources like connections and such) when done with it,
+providing cleaner code and better error handling:
+
+```python
+with open("filename.txt", "r") as file:
+    # Perform file operations here
+```
+
+If an exception happens in regards to the file opened, the `with` block exits,
+but the file will still be properly closed.
+
