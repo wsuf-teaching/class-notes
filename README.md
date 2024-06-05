@@ -57,3 +57,4 @@
   - [7.a - pip](/backend1/pip.md)
   - [7.b - Jupyter notebooks](/backend1/jupyter.md)
   - [7.2 - Flask](/backend1/flask-basics.md)
+  - [7.2.a - Flask basics files](/backend1/flask1/)
