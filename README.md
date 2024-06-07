@@ -54,7 +54,9 @@
 
 [7. Backend](/backend1)
   - [7.1 Python - basics](/backend1/python-basics.md)
-  - [7.a - pip](/backend1/pip.md)
-  - [7.b - Jupyter notebooks](/backend1/jupyter.md)
-  - [7.2 - Flask](/backend1/flask-basics.md)
-  - [7.2.a - Flask basics files](/backend1/flask1/)
+  - [7.2 - pip](/backend1/pip.md)
+  - [7.3 - Jupyter notebooks](/backend1/jupyter.md)
+  - [7.4 - Flask](/backend1/flask-basics.md)
+  - [7.X - Flask basics files](/backend1/flask1/)
+  - [7.5 - Jinja templates](/backend1/templates.md)
+  - [7.Y - Jinja templates project](https://github.com/wsuf-teaching/jinja-templates)
