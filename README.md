@@ -60,3 +60,4 @@
   - [7.X - Flask basics files](/backend1/flask1/)
   - [7.5 - Jinja templates](/backend1/templates.md)
   - [7.Y - Jinja templates project](https://github.com/wsuf-teaching/jinja-templates)
+  - [7.Z - Installing Sqlite3](/backend1/sqliteinstall.md)
