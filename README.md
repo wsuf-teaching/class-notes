@@ -61,5 +61,6 @@
   - [7.5 - Jinja templates](/backend1/templates.md)
   - [7.Y - Jinja templates project](https://github.com/wsuf-teaching/jinja-templates)
   - [7.Z - Installing Sqlite3](/backend1/sqliteinstall.md)
-  - [7.6 - SQLAlchemy & AAA](/backend1/sqlalchemyandaaa.md)
+  - [7.6 - SQLAlchemy](/backend1/sqlalchemyandaaa.md)
+  - [7.7 - AAA](/backend1/aaa.md)
   - [7.A - SQLAlchemy & AAA project](https://github.com/wsuf-teaching/flask-sqlalchemy)
