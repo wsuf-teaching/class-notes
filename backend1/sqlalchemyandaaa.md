@@ -33,7 +33,6 @@ if __name__ == '__main__':
 First we setup the project similarly as before. Noteable changes that will happen are the database uri configuration value, the migration object and moving all of this logic over to a separate function.
 Just to see whether it works, a simple hello world route is created too.
 
-
 ## Database setup, models and data
 
 To create the db, run the command `sqlite3 data.db`, `data.db ""` or `data.db " "`. Command lines on Windows prefer the last format.
@@ -203,13 +202,153 @@ newfood.image_url='goulash.jpg'
 db.session.commit()
 ```
 
+Of course we can get new objects from queries in the database. Here we get the first result matching the name "ramen", modify its `image_url` property and save it back.
+
+```python
+ramen = Food.query.filter(Food.name=='Ramen').first()
+print(ramen)
+ramen.image_url='ramen.png'
+db.session.commit()
+```
+
 Getting a single item by it's id:
 
 ```python
 Food.query.get(1)
 ```
 
-Getting all the items:
+Getting all the results with `.all()` here. The `like` functions works just like in SQL. With `~` we can negate a query.
+
+```python
+foods = Food.query.all()
+foods_json = [food.json() for food in foods]
+foods_json
 ```
-Food.query.all()
+
+```python
+foods = Food.query.filter(Food.image_url.like("%jpg")).all()
+print(foods)
+foods = Food.query.filter(~Food.image_url.like("%jpg")).all()
+print(foods)
 ```
+
+
+Without calling `first`, `all` or aggregate functions, we would get the actual query that would be executed on the data.
+
+```python
+foods = Food.query.filter(Food.image_url.like("%jpg"))
+print(foods)
+```
+
+We can check inclusion as well, or see whether a field exists. In case of the latter, of course we won't have any hits in this case, as we set all the field to `Nullable=False`.
+
+```python
+mynames = ['John','Joe','Lisa','Bob']
+User.query.filter(User.name.in_(mynames)) 
+```
+
+```python
+User.query.filter(User.email==None).all()
+```
+
+Filtering to multiple conditions can be done with `and` and `or`, or in case of `and`, separating the conditions with a comma also works.
+
+```python
+from sqlalchemy import func, desc, asc
+
+Food.query.filter(Food.price < 10, func.length(Food.name)<5).all()
+
+Food.query.filter(db.and_(Food.price < 10, func.length(Food.name)<5)).all()
+Food.query.filter(db.or_(Food.price < 10, func.length(Food.name)<5)).all()
+```
+
+Ordering and limiting results is done as follows:
+
+```python
+Food.query.order_by(desc(Food.name)).all()
+
+Food.query.order_by(Food.name.desc(), Food.price.asc()).all()
+
+Food.query.order_by(desc(Food.name)).limit(3).all()
+```
+
+Last, we can also do aggregate functions like `avg` or `count`:
+
+```python
+Food.query.count()
+db.session.query(func.avg(Food.price)).scalar()
+```
+
+Most of these "raw-ish" queries we only have to write once. With class_methods in the model classes, we can wrap the functionality with simple function calls that we can refer to in our program.
+
+```python
+foods = Food.get_all()
+for food in foods:
+    print(food)
+
+food1 = Food.get_by_id(1)
+```
+
+## CRUD routes
+
+Create a new route that lists all the foods, and one that gets one. Notice how we use the database wrapper class functions we created in the `food.py` file.
+
+```python
+# Create a new food item
+@app.route('/food', methods=['POST'])
+def create_food():
+    data = request.get_json()
+    new_food = Food(
+        name=data['name'],
+        description=data['description'],
+        price=data['price'],
+        image_url=data['image_url']
+    )
+    db.session.add(new_food)
+    db.session.commit()
+    return jsonify(new_food.json()), 201
+
+# Get all food
+@app.route('/foods', methods=['GET'])
+def get_all_foods():
+    foods = Food.get_all()
+    return jsonify([food.json() for food in foods]),200
+
+# Get a single food item by id
+@app.route('/food/<int:food_id>', methods=['GET'])
+def get_food(food_id):
+    food = Food.get_by_id(food_id)
+    if food:
+        return jsonify(food.json()), 200
+    else:
+        return jsonify({'message': 'Food not found'}), 404
+
+# Update an existing food item
+@app.route('/food/<int:food_id>', methods=['PUT'])
+def update_food(food_id):
+    data = request.get_json()
+    food = Food.get_by_id(food_id)
+    if food:
+        food.name = data.get('name', food.name)
+        food.description = data.get('description', food.description)
+        food.price = data.get('price', food.price)
+        food.image_url = data.get('image_url', food.image_url)
+        db.session.commit()
+        return jsonify(food.json()), 200
+    else:
+        return jsonify({'message': 'Food not found'}), 404
+
+# Delete a food item
+@app.route('/food/<int:food_id>', methods=['DELETE'])
+def delete_food(food_id):
+    food = Food.get_by_id(food_id)
+    if food:
+        db.session.delete(food)
+        db.session.commit()
+        return jsonify({'message': 'Food deleted'}), 200
+    else:
+        return jsonify({'message': 'Food not found'}), 404
+
+```
+
+> Examples of how to use all these routes are shown during the video recordings of the classes as well as we will see examples to some of them next week when we connect the Flask backend application to the React frontend.
