@@ -164,4 +164,56 @@ def login():
     return jwt_token, 200
 ```
 
+## Registration route
 
+This route allows new users to create an account in the application. When a POST request is made to the `/register` endpoint, the route handler starts by retrieving the JSON data from the request using `request.get_json(force=True)`. This ensures that the request is parsed as JSON even if the `Content-Type` header is not set. The `username` and `password` are then extracted from this JSON data. If either the `username` or `password` is missing, the route returns a 400 status code with a message indicating that both fields are required.
+
+Next, the `lookup` method of the `User` model is used to check if a user with the provided `username` already exists. If an existing user is found, the route returns a 400 status code with a message stating that the user already exists. If no existing user is found, a new `User` object is created with the provided `username`, the hashed `password` (using `guard.hash_password(password)`), and an empty `roles` string.
+
+The new user is then added to the database session with `db.session.add(user)` and committed to the database using `db.session.commit()`. Finally, the route returns a 201 status code with a message indicating that the user was registered successfully.
+
+```python
+@app.route('/register', methods=['POST'])
+def register():
+    req = request.get_json(force=True)
+    username = req.get('username', None)
+    password = req.get('password', None)
+    roles = ''
+    if not username or not password:
+        return {'message': 'Username and password are required'}, 400
+    existing_user = User.lookup(username)
+    if existing_user:
+        return {'message': 'User already exists'}, 400
+    
+    user = User(username=username, password=guard.hash_password(password),roles=roles)
+    db.session.add(user)
+    db.session.commit()
+    return {'message': 'User registered successfully'}, 201
+```
+
+## Login protected route
+
+The protected route is a secured endpoint that requires the user to be authenticated. The `@flask_praetorian.auth_required` decorator ensures that only authenticated users can access this route. When an authenticated user makes a GET request to the `/protected` endpoint, the route returns a message indicating that the endpoint is protected and includes the username of the authenticated user. The `flask_praetorian.current_user()` function is used to get the current authenticated user, and their username is included in the response message.
+
+```python
+@app.route('/protected', methods=['GET'])
+@flask_praetorian.auth_required
+def protected():
+    # "Authorization: Bearer <your_token>"
+    return {'message': f'protected endpoint (allowed user {flask_praetorian.current_user().username})'}
+```
+
+## Admin only route
+
+Finally, this is another secured endpoint, but it requires the user to have a specific role. The `@flask_praetorian.roles_required("admin")` decorator ensures that only users with the "admin" role can access this route. When a user with the appropriate role makes a GET request to the `/adminonly` endpoint, the route returns a message indicating that the endpoint is protected and includes the username of the current user. As with the protected route, the `flask_praetorian.current_user()` function is used to get the current user, and their username is included in the response message.
+
+```python
+@app.route('/adminonly', methods=['GET'])
+@flask_praetorian.roles_required("admin")
+def protected_admin_required():
+    return jsonify(
+        message="protected_admin_required endpoint (current user is: {})".format(
+            flask_praetorian.current_user().username,
+        )
+    )
+```

@@ -64,3 +64,5 @@
   - [7.6 - SQLAlchemy](/backend1/sqlalchemyandaaa.md)
   - [7.7 - AAA](/backend1/aaa.md)
   - [7.A - SQLAlchemy & AAA project](https://github.com/wsuf-teaching/flask-sqlalchemy)
+  - [7.8 - Order handling logic](/backend1/orders-backend.md)
+  - [7.9 - Food order frontend connection](/backend1/junkbank-frontend-connection.md)
